@@ -1,0 +1,12 @@
+/target/
+/.venv/
+/local-notes/
+/runs/
+__pycache__/
+*.pyc
+*.egg-info/
+.DS_Store
+
+/dist/
+/.ruff_cache/
+/demo/rowglass-source.zip

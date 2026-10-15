@@ -1,0 +1,15 @@
+{
+  "status": "reproduced_known_limitation",
+  "mirror": "rg_replay_1792089480394647000",
+  "source_expected_keys": [
+    "2060"
+  ],
+  "target_observed_keys": [
+    "60",
+    "2060"
+  ],
+  "original_transactions": 104,
+  "replay_transactions": 2,
+  "baseline_rows": 1,
+  "reference": "https://clickhouse.com/docs/integrations/clickpipes/postgres/faq#can-i-update-primary-key-columns-in-postgresql"
+}

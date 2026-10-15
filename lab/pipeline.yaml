@@ -1,0 +1,111 @@
+# Based on PeerDB's documented service topology at 42e190b897bf073ba49f1460f83f669c97a4dbad.
+# Separate project-scoped containers, volumes and localhost ports; no shared global names.
+x-catalog: &catalog
+  PEERDB_CATALOG_HOST: catalog
+  PEERDB_CATALOG_PORT: 5432
+  PEERDB_CATALOG_USER: postgres
+  PEERDB_CATALOG_PASSWORD: rowglass-catalog
+  PEERDB_CATALOG_DATABASE: postgres
+x-flow: &flow
+  <<: *catalog
+  TEMPORAL_HOST_PORT: temporal:7233
+  PEERDB_TEMPORAL_NAMESPACE: default
+  PEERDB_CLICKHOUSE_AWS_CREDENTIALS_AWS_ACCESS_KEY_ID: rowglass-minio
+  PEERDB_CLICKHOUSE_AWS_CREDENTIALS_AWS_SECRET_ACCESS_KEY: rowglass-minio-local
+  PEERDB_CLICKHOUSE_AWS_CREDENTIALS_AWS_REGION: us-east-1
+  PEERDB_CLICKHOUSE_AWS_CREDENTIALS_AWS_ENDPOINT_URL_S3: http://minio:9000
+  PEERDB_CLICKHOUSE_AWS_S3_BUCKET_NAME: rowglass
+
+services:
+  catalog:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rowglass-catalog
+    volumes: ["catalog-data:/var/lib/postgresql/data"]
+    ports: ["127.0.0.1:55433:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  temporal:
+    image: temporalio/auto-setup:1.29@sha256:f14912b699cf73015ad5c4fc18d522d4b014db90e794039214dfb7c022c2644f
+    depends_on:
+      catalog: {condition: service_healthy}
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: rowglass-catalog
+      POSTGRES_SEEDS: catalog
+  temporal-init:
+    image: temporalio/admin-tools:1.25.2-tctl-1.18.1-cli-1.1.1@sha256:da0c7a7982b571857173ab8f058e7f139b3054800abb4dcb100445d29a563ee8
+    depends_on: [temporal]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        for i in $$(seq 1 90); do
+        temporal operator search-attribute list && break;
+        sleep 1; done;
+        temporal operator search-attribute create --name MirrorName --type Text --namespace default ||
+        temporal operator search-attribute list | grep MirrorName
+  minio:
+    image: pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46
+    environment:
+      MINIO_ROOT_USER: rowglass-minio
+      MINIO_ROOT_PASSWORD: rowglass-minio-local
+    volumes: ["minio-data:/data"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        silo server /data --console-address=:36987 &
+        for i in $$(seq 1 30); do
+        mc alias set local http://localhost:9000 rowglass-minio rowglass-minio-local &&
+        mc mb --ignore-existing local/rowglass && break;
+        sleep 1; done;
+        wait
+  flow-migrate:
+    image: ghcr.io/peerdb-io/flow-api:stable-v0.37.10
+    environment: *catalog
+    entrypoint: ["/home/peerdb/peer-flow", "migrate"]
+    depends_on:
+      catalog: {condition: service_healthy}
+  flow-api:
+    image: ghcr.io/peerdb-io/flow-api:stable-v0.37.10
+    environment: *flow
+    ports: ["127.0.0.1:58113:8113"]
+    depends_on:
+      flow-migrate: {condition: service_completed_successfully}
+      temporal-init: {condition: service_completed_successfully}
+  flow-worker:
+    image: ghcr.io/peerdb-io/flow-worker:stable-v0.37.10
+    environment: *flow
+    depends_on:
+      flow-migrate: {condition: service_completed_successfully}
+      temporal-init: {condition: service_completed_successfully}
+      minio: {condition: service_started}
+  flow-snapshot-worker:
+    image: ghcr.io/peerdb-io/flow-snapshot-worker:stable-v0.37.10
+    environment: *flow
+    depends_on:
+      flow-migrate: {condition: service_completed_successfully}
+      temporal-init: {condition: service_completed_successfully}
+      minio: {condition: service_started}
+  peerdb:
+    image: ghcr.io/peerdb-io/peerdb-server:stable-v0.37.10
+    environment:
+      <<: *catalog
+      PEERDB_PASSWORD: rowglass-local
+      PEERDB_FLOW_SERVER_ADDRESS: grpc://flow-api:8112
+      PEERDB_MIGRATIONS_DISABLED: "true"
+    ports: ["127.0.0.1:59900:9900"]
+    depends_on:
+      flow-migrate: {condition: service_completed_successfully}
+
+volumes:
+  catalog-data:
+  minio-data:

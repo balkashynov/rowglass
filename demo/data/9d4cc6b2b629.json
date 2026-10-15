@@ -1,0 +1,344 @@
+{
+  "format": "rowglass-replay-v1",
+  "selected": {
+    "table": "public.orders",
+    "key": "[\"number:42e0\"]"
+  },
+  "schema": "rowglass_replay",
+  "table_map": {
+    "public.orders": "table_0",
+    "public.payments": "table_1"
+  },
+  "journal": {
+    "ignored_incomplete_tail_bytes": 0,
+    "sha256": "6257a189fa76cf0d1bd80a99cf510489486f506d18243b911d2b0c2ca4b83e8b",
+    "valid_bytes": 592579
+  },
+  "source_cut": "0/19C6C80",
+  "total_transactions": 104,
+  "selected_transactions": 3,
+  "baseline_rows": 1,
+  "dependency_keys": 2,
+  "transactions": [
+    {
+      "xid": 785,
+      "lsn": "0/19C0B28",
+      "changes": [
+        {
+          "table": "public.orders",
+          "op": "update",
+          "old_key": null,
+          "key": "[\"number:42e0\"]",
+          "before": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "52.500042"
+            },
+            "status": {
+              "kind": "text",
+              "value": "pending"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-01-01 00:00:00+00"
+            }
+          },
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "52.500043"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          }
+        },
+        {
+          "table": "public.payments",
+          "op": "insert",
+          "old_key": null,
+          "key": "[\"number:1792089477042e0\"]",
+          "before": null,
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "1792089477042"
+            },
+            "order_id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "12.345678"
+            },
+            "state": {
+              "kind": "text",
+              "value": "captured"
+            }
+          }
+        }
+      ],
+      "sql": "-- Source XID 785, commit 0/19C0B28\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='52.500043', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nINSERT INTO \"rowglass_replay\".\"table_1\" (\"id\", \"order_id\", \"amount\", \"state\") VALUES ('1792089477042', '42', '12.345678', 'captured');\nCOMMIT;\n"
+    },
+    {
+      "xid": 844,
+      "lsn": "0/19C6980",
+      "changes": [
+        {
+          "table": "public.orders",
+          "op": "update",
+          "old_key": null,
+          "key": "[\"number:42e0\"]",
+          "before": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "52.500043"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "9007199254740993.123456"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          }
+        },
+        {
+          "table": "public.payments",
+          "op": "update",
+          "old_key": null,
+          "key": "[\"number:1792089477042e0\"]",
+          "before": {
+            "id": {
+              "kind": "text",
+              "value": "1792089477042"
+            },
+            "order_id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "12.345678"
+            },
+            "state": {
+              "kind": "text",
+              "value": "captured"
+            }
+          },
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "1792089477042"
+            },
+            "order_id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "12.345678"
+            },
+            "state": {
+              "kind": "text",
+              "value": "refunded"
+            }
+          }
+        }
+      ],
+      "sql": "-- Source XID 844, commit 0/19C6980\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='9007199254740993.123456', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nUPDATE \"rowglass_replay\".\"table_1\" SET \"id\"='1792089477042', \"order_id\"='42', \"amount\"='12.345678', \"state\"='refunded' WHERE \"id\" IS NOT DISTINCT FROM '1792089477042';\nCOMMIT;\n"
+    },
+    {
+      "xid": 845,
+      "lsn": "0/19C6A88",
+      "changes": [
+        {
+          "table": "public.orders",
+          "op": "update",
+          "old_key": null,
+          "key": "[\"number:42e0\"]",
+          "before": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "9007199254740993.123456"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "9007199254740993.123456"
+            },
+            "status": {
+              "kind": "text",
+              "value": "refunded"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          }
+        }
+      ],
+      "sql": "-- Source XID 845, commit 0/19C6A88\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='9007199254740993.123456', \"status\"='refunded', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nCOMMIT;\n"
+    }
+  ],
+  "bootstrap_sql": "-- Rowglass isolated row-lineage replay. Original triggers, constraints and DDL are not copied.\n-- CREATE SCHEMA fails if the destination already exists. Never replay into a production schema.\nSET standard_conforming_strings = on;\nSET TIME ZONE 'UTC';\nBEGIN;\nCREATE SCHEMA \"rowglass_replay\";\nCREATE TABLE \"rowglass_replay\".\"table_0\" (\"id\" bigint, \"customer\" text, \"amount\" numeric, \"status\" text, \"metadata\" jsonb, \"updated_at\" timestamptz, PRIMARY KEY (\"id\"));\nCREATE TABLE \"rowglass_replay\".\"table_1\" (\"id\" bigint, \"order_id\" bigint, \"amount\" numeric, \"state\" text, PRIMARY KEY (\"id\"));\nINSERT INTO \"rowglass_replay\".\"table_0\" (\"id\", \"customer\", \"amount\", \"status\", \"metadata\", \"updated_at\") VALUES ('42', 'customer-42', '52.500042', 'pending', '{\"region\": \"ca\"}', '2026-01-01 00:00:00+00');\nCOMMIT;\n",
+  "sql": "-- Rowglass isolated row-lineage replay. Original triggers, constraints and DDL are not copied.\n-- CREATE SCHEMA fails if the destination already exists. Never replay into a production schema.\nSET standard_conforming_strings = on;\nSET TIME ZONE 'UTC';\nBEGIN;\nCREATE SCHEMA \"rowglass_replay\";\nCREATE TABLE \"rowglass_replay\".\"table_0\" (\"id\" bigint, \"customer\" text, \"amount\" numeric, \"status\" text, \"metadata\" jsonb, \"updated_at\" timestamptz, PRIMARY KEY (\"id\"));\nCREATE TABLE \"rowglass_replay\".\"table_1\" (\"id\" bigint, \"order_id\" bigint, \"amount\" numeric, \"state\" text, PRIMARY KEY (\"id\"));\nINSERT INTO \"rowglass_replay\".\"table_0\" (\"id\", \"customer\", \"amount\", \"status\", \"metadata\", \"updated_at\") VALUES ('42', 'customer-42', '52.500042', 'pending', '{\"region\": \"ca\"}', '2026-01-01 00:00:00+00');\nCOMMIT;\n-- Source XID 785, commit 0/19C0B28\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='52.500043', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nINSERT INTO \"rowglass_replay\".\"table_1\" (\"id\", \"order_id\", \"amount\", \"state\") VALUES ('1792089477042', '42', '12.345678', 'captured');\nCOMMIT;\n-- Source XID 844, commit 0/19C6980\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='9007199254740993.123456', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nUPDATE \"rowglass_replay\".\"table_1\" SET \"id\"='1792089477042', \"order_id\"='42', \"amount\"='12.345678', \"state\"='refunded' WHERE \"id\" IS NOT DISTINCT FROM '1792089477042';\nCOMMIT;\n-- Source XID 845, commit 0/19C6A88\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='42', \"customer\"='customer-42', \"amount\"='9007199254740993.123456', \"status\"='refunded', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '42';\nCOMMIT;\n",
+  "sql_sha256": "364e8909cc7a71566560ccf0a92470acbff2b9dadb50bb42c32feea3e7452788",
+  "expected_rows": [
+    {
+      "table": "public.orders",
+      "key": "[\"number:42e0\"]",
+      "values": {
+        "id": {
+          "kind": "text",
+          "value": "42"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-42"
+        },
+        "amount": {
+          "kind": "text",
+          "value": "9007199254740993.123456"
+        },
+        "status": {
+          "kind": "text",
+          "value": "refunded"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\": \"ca\"}"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00+00"
+        }
+      }
+    },
+    {
+      "table": "public.payments",
+      "key": "[\"number:1792089477042e0\"]",
+      "values": {
+        "id": {
+          "kind": "text",
+          "value": "1792089477042"
+        },
+        "order_id": {
+          "kind": "text",
+          "value": "42"
+        },
+        "amount": {
+          "kind": "text",
+          "value": "12.345678"
+        },
+        "state": {
+          "kind": "text",
+          "value": "refunded"
+        }
+      }
+    }
+  ],
+  "limits": "Backward row lineage with whole transactions. Not a minimal failing reproducer. Foreign keys, triggers, constraints, typmods and original statement predicates are not reconstructed."
+}

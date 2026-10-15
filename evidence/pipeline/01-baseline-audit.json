@@ -1,0 +1,71 @@
+{
+  "consistency": {
+    "mode": "live",
+    "source_cut_observed": "0/19BC770"
+  },
+  "contract": "A live mismatch can be lag. A controlled cut is a caller-established experimental boundary, not an inferred global snapshot. No audit alone proves permanent loss.",
+  "format": "rowglass-audit-v1",
+  "journal": {
+    "ignored_incomplete_tail_bytes": 0,
+    "sha256": "031a40b1d006b6ef75924f86daff60d9a4d3a1608630394d53bd215f6e824314",
+    "valid_bytes": 476891
+  },
+  "mismatches": [],
+  "source": {
+    "changes": 0,
+    "identity": {
+      "database": "rowglass",
+      "protocol": "pgoutput-v1",
+      "publication": "rowglass_demo",
+      "slot": "rowglass_demo_1792089476859408000",
+      "snapshot_lsn": "0/19BC770",
+      "system_id": "7696965593702682657",
+      "tables": [
+        {
+          "source": "public.orders",
+          "target": "orders"
+        },
+        {
+          "source": "public.payments",
+          "target": "payments"
+        }
+      ],
+      "timeline": 1
+    },
+    "rows": 2000,
+    "sealed": true,
+    "source_cut": "0/19BC770",
+    "tables": [
+      {
+        "name": "public.orders",
+        "rows": 2000
+      },
+      {
+        "name": "public.payments",
+        "rows": 0
+      }
+    ],
+    "transactions": 0
+  },
+  "status": "live_observation",
+  "target_metadata": {
+    "elapsed_ms": 27.14374999050051,
+    "engine": "ClickHouse",
+    "limitation": "Per-table reads, no shared source/target snapshot. Version conflicts already merged away cannot be recovered from this read.",
+    "observed_at": "2026-10-15T18:37:57.218819+00:00",
+    "queries": [
+      {
+        "query_id": "5fb4824f-1c4e-4747-9434-a6da7a1539c3",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`customer`) AS `customer`, toString(`amount`) AS `amount`, toString(`status`) AS `status`, toString(`metadata`) AS `metadata`, toString(toTimeZone(`updated_at`, 'UTC')) AS `updated_at`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `orders`) WHERE __rg_rank = 1"
+      },
+      {
+        "query_id": "65f3a5d5-887a-4d44-9a96-dcc878f93b71",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`order_id`) AS `order_id`, toString(`amount`) AS `amount`, toString(`state`) AS `state`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `payments`) WHERE __rg_rank = 1"
+      }
+    ]
+  },
+  "totals": {
+    "matched": 2000
+  },
+  "scenario": "01-baseline"
+}

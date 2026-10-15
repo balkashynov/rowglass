@@ -1,0 +1,172 @@
+{
+  "format": "rowglass-replay-v1",
+  "selected": {
+    "table": "public.orders",
+    "key": "[\"number:2e1\"]"
+  },
+  "schema": "rowglass_replay",
+  "table_map": {
+    "public.orders": "table_0",
+    "public.payments": "table_1"
+  },
+  "journal": {
+    "ignored_incomplete_tail_bytes": 0,
+    "sha256": "6257a189fa76cf0d1bd80a99cf510489486f506d18243b911d2b0c2ca4b83e8b",
+    "valid_bytes": 592579
+  },
+  "source_cut": "0/19C6C80",
+  "total_transactions": 104,
+  "selected_transactions": 1,
+  "baseline_rows": 1,
+  "dependency_keys": 2,
+  "transactions": [
+    {
+      "xid": 763,
+      "lsn": "0/19BE800",
+      "changes": [
+        {
+          "table": "public.orders",
+          "op": "update",
+          "old_key": null,
+          "key": "[\"number:2e1\"]",
+          "before": {
+            "id": {
+              "kind": "text",
+              "value": "20"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-20"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "25.000020"
+            },
+            "status": {
+              "kind": "text",
+              "value": "pending"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-01-01 00:00:00+00"
+            }
+          },
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "20"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-20"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "25.000021"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          }
+        },
+        {
+          "table": "public.payments",
+          "op": "insert",
+          "old_key": null,
+          "key": "[\"number:179208947702e1\"]",
+          "before": null,
+          "after": {
+            "id": {
+              "kind": "text",
+              "value": "1792089477020"
+            },
+            "order_id": {
+              "kind": "text",
+              "value": "20"
+            },
+            "amount": {
+              "kind": "text",
+              "value": "12.345678"
+            },
+            "state": {
+              "kind": "text",
+              "value": "captured"
+            }
+          }
+        }
+      ],
+      "sql": "-- Source XID 763, commit 0/19BE800\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='20', \"customer\"='customer-20', \"amount\"='25.000021', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '20';\nINSERT INTO \"rowglass_replay\".\"table_1\" (\"id\", \"order_id\", \"amount\", \"state\") VALUES ('1792089477020', '20', '12.345678', 'captured');\nCOMMIT;\n"
+    }
+  ],
+  "bootstrap_sql": "-- Rowglass isolated row-lineage replay. Original triggers, constraints and DDL are not copied.\n-- CREATE SCHEMA fails if the destination already exists. Never replay into a production schema.\nSET standard_conforming_strings = on;\nSET TIME ZONE 'UTC';\nBEGIN;\nCREATE SCHEMA \"rowglass_replay\";\nCREATE TABLE \"rowglass_replay\".\"table_0\" (\"id\" bigint, \"customer\" text, \"amount\" numeric, \"status\" text, \"metadata\" jsonb, \"updated_at\" timestamptz, PRIMARY KEY (\"id\"));\nCREATE TABLE \"rowglass_replay\".\"table_1\" (\"id\" bigint, \"order_id\" bigint, \"amount\" numeric, \"state\" text, PRIMARY KEY (\"id\"));\nINSERT INTO \"rowglass_replay\".\"table_0\" (\"id\", \"customer\", \"amount\", \"status\", \"metadata\", \"updated_at\") VALUES ('20', 'customer-20', '25.000020', 'pending', '{\"region\": \"ca\"}', '2026-01-01 00:00:00+00');\nCOMMIT;\n",
+  "sql": "-- Rowglass isolated row-lineage replay. Original triggers, constraints and DDL are not copied.\n-- CREATE SCHEMA fails if the destination already exists. Never replay into a production schema.\nSET standard_conforming_strings = on;\nSET TIME ZONE 'UTC';\nBEGIN;\nCREATE SCHEMA \"rowglass_replay\";\nCREATE TABLE \"rowglass_replay\".\"table_0\" (\"id\" bigint, \"customer\" text, \"amount\" numeric, \"status\" text, \"metadata\" jsonb, \"updated_at\" timestamptz, PRIMARY KEY (\"id\"));\nCREATE TABLE \"rowglass_replay\".\"table_1\" (\"id\" bigint, \"order_id\" bigint, \"amount\" numeric, \"state\" text, PRIMARY KEY (\"id\"));\nINSERT INTO \"rowglass_replay\".\"table_0\" (\"id\", \"customer\", \"amount\", \"status\", \"metadata\", \"updated_at\") VALUES ('20', 'customer-20', '25.000020', 'pending', '{\"region\": \"ca\"}', '2026-01-01 00:00:00+00');\nCOMMIT;\n-- Source XID 763, commit 0/19BE800\nBEGIN;\nUPDATE \"rowglass_replay\".\"table_0\" SET \"id\"='20', \"customer\"='customer-20', \"amount\"='25.000021', \"status\"='paid', \"metadata\"='{\"region\": \"ca\"}', \"updated_at\"='2026-10-15 12:00:00+00' WHERE \"id\" IS NOT DISTINCT FROM '20';\nINSERT INTO \"rowglass_replay\".\"table_1\" (\"id\", \"order_id\", \"amount\", \"state\") VALUES ('1792089477020', '20', '12.345678', 'captured');\nCOMMIT;\n",
+  "sql_sha256": "90f5bac647171ef342b18ab5d9a5a64bc1337d8fef2e2d2aabd677648431f66a",
+  "expected_rows": [
+    {
+      "table": "public.orders",
+      "key": "[\"number:2e1\"]",
+      "values": {
+        "id": {
+          "kind": "text",
+          "value": "20"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-20"
+        },
+        "amount": {
+          "kind": "text",
+          "value": "25.000021"
+        },
+        "status": {
+          "kind": "text",
+          "value": "paid"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\": \"ca\"}"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00+00"
+        }
+      }
+    },
+    {
+      "table": "public.payments",
+      "key": "[\"number:179208947702e1\"]",
+      "values": {
+        "id": {
+          "kind": "text",
+          "value": "1792089477020"
+        },
+        "order_id": {
+          "kind": "text",
+          "value": "20"
+        },
+        "amount": {
+          "kind": "text",
+          "value": "12.345678"
+        },
+        "state": {
+          "kind": "text",
+          "value": "captured"
+        }
+      }
+    }
+  ],
+  "limits": "Backward row lineage with whole transactions. Not a minimal failing reproducer. Foreign keys, triggers, constraints, typmods and original statement predicates are not reconstructed."
+}

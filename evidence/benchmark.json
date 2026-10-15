@@ -1,0 +1,219 @@
+{
+  "environment": {
+    "machine": "arm64",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "rust": "rustc 1.93.0 (254b59607 2026-01-19)",
+    "python": "3.13.5"
+  },
+  "method": "Synthetic three-column journal, 10% one-row updates, exact matching target. Three warm-cache runs including process startup; macOS time -l peak RSS bytes. Inspect does not keep history. Audit retains state and reconstructs histories only for discrepant keys. Python baseline checks CRC/SHA and exact scalar equality but supports only this fixture schema; it is not a full feature competitor.",
+  "results": [
+    {
+      "rows": 1000,
+      "updates": 100,
+      "engine": "native_inspect",
+      "journal_bytes": 144886,
+      "target_bytes": 121802,
+      "median_seconds": 0.011385167017579079,
+      "peak_rss_bytes": 4751360,
+      "repetitions": [
+        {
+          "seconds": 0.21201112499693409,
+          "peak_rss_bytes": 4751360
+        },
+        {
+          "seconds": 0.011385167017579079,
+          "peak_rss_bytes": 4751360
+        },
+        {
+          "seconds": 0.009669666003901511,
+          "peak_rss_bytes": 4734976
+        }
+      ]
+    },
+    {
+      "rows": 1000,
+      "updates": 100,
+      "engine": "native_audit",
+      "journal_bytes": 144886,
+      "target_bytes": 121802,
+      "median_seconds": 0.010461124998982996,
+      "peak_rss_bytes": 5849088,
+      "repetitions": [
+        {
+          "seconds": 0.011827665992313996,
+          "peak_rss_bytes": 5832704
+        },
+        {
+          "seconds": 0.010461124998982996,
+          "peak_rss_bytes": 5849088
+        },
+        {
+          "seconds": 0.009877042000880465,
+          "peak_rss_bytes": 5832704
+        }
+      ]
+    },
+    {
+      "rows": 1000,
+      "updates": 100,
+      "engine": "python_reference",
+      "journal_bytes": 144886,
+      "target_bytes": 121802,
+      "median_seconds": 0.041365500015672296,
+      "peak_rss_bytes": 24772608,
+      "repetitions": [
+        {
+          "seconds": 0.04341329200542532,
+          "peak_rss_bytes": 24707072
+        },
+        {
+          "seconds": 0.041365500015672296,
+          "peak_rss_bytes": 24772608
+        },
+        {
+          "seconds": 0.040618416998768225,
+          "peak_rss_bytes": 24772608
+        }
+      ]
+    },
+    {
+      "rows": 10000,
+      "updates": 1000,
+      "engine": "native_inspect",
+      "journal_bytes": 1470921,
+      "target_bytes": 1236904,
+      "median_seconds": 0.02336033299798146,
+      "peak_rss_bytes": 12828672,
+      "repetitions": [
+        {
+          "seconds": 0.023615999991307035,
+          "peak_rss_bytes": 12812288
+        },
+        {
+          "seconds": 0.02336033299798146,
+          "peak_rss_bytes": 12812288
+        },
+        {
+          "seconds": 0.022901291988091543,
+          "peak_rss_bytes": 12828672
+        }
+      ]
+    },
+    {
+      "rows": 10000,
+      "updates": 1000,
+      "engine": "native_audit",
+      "journal_bytes": 1470921,
+      "target_bytes": 1236904,
+      "median_seconds": 0.04544162499951199,
+      "peak_rss_bytes": 24166400,
+      "repetitions": [
+        {
+          "seconds": 0.044727458007400855,
+          "peak_rss_bytes": 24166400
+        },
+        {
+          "seconds": 0.04544162499951199,
+          "peak_rss_bytes": 24166400
+        },
+        {
+          "seconds": 0.045462709007551894,
+          "peak_rss_bytes": 24133632
+        }
+      ]
+    },
+    {
+      "rows": 10000,
+      "updates": 1000,
+      "engine": "python_reference",
+      "journal_bytes": 1470921,
+      "target_bytes": 1236904,
+      "median_seconds": 0.07349045798764564,
+      "peak_rss_bytes": 46465024,
+      "repetitions": [
+        {
+          "seconds": 0.061563166993437335,
+          "peak_rss_bytes": 46399488
+        },
+        {
+          "seconds": 0.07349045798764564,
+          "peak_rss_bytes": 46465024
+        },
+        {
+          "seconds": 0.07368470798246562,
+          "peak_rss_bytes": 46366720
+        }
+      ]
+    },
+    {
+      "rows": 100000,
+      "updates": 10000,
+      "engine": "native_inspect",
+      "journal_bytes": 14954699,
+      "target_bytes": 12567906,
+      "median_seconds": 0.22330237500136718,
+      "peak_rss_bytes": 92422144,
+      "repetitions": [
+        {
+          "seconds": 0.2202502920117695,
+          "peak_rss_bytes": 92422144
+        },
+        {
+          "seconds": 0.22697470799903385,
+          "peak_rss_bytes": 92389376
+        },
+        {
+          "seconds": 0.22330237500136718,
+          "peak_rss_bytes": 92389376
+        }
+      ]
+    },
+    {
+      "rows": 100000,
+      "updates": 10000,
+      "engine": "native_audit",
+      "journal_bytes": 14954699,
+      "target_bytes": 12567906,
+      "median_seconds": 0.4441177079861518,
+      "peak_rss_bytes": 207224832,
+      "repetitions": [
+        {
+          "seconds": 0.46988712501479313,
+          "peak_rss_bytes": 207224832
+        },
+        {
+          "seconds": 0.43688879199908115,
+          "peak_rss_bytes": 207192064
+        },
+        {
+          "seconds": 0.4441177079861518,
+          "peak_rss_bytes": 207224832
+        }
+      ]
+    },
+    {
+      "rows": 100000,
+      "updates": 10000,
+      "engine": "python_reference",
+      "journal_bytes": 14954699,
+      "target_bytes": 12567906,
+      "median_seconds": 0.29781937500229105,
+      "peak_rss_bytes": 268484608,
+      "repetitions": [
+        {
+          "seconds": 0.30272550001973286,
+          "peak_rss_bytes": 268484608
+        },
+        {
+          "seconds": 0.2957136250042822,
+          "peak_rss_bytes": 268238848
+        },
+        {
+          "seconds": 0.29781937500229105,
+          "peak_rss_bytes": 268288000
+        }
+      ]
+    }
+  ]
+}

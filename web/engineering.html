@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rowglass | Engineering notes</title>
+    <meta
+      name="description"
+      content="The durability, consistency and replay contracts behind Rowglass, with source and measured evidence."
+    />
+    <link rel="icon" href="favicon.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .brief {
+        max-width: 960px;
+        margin: 70px auto;
+        padding: 0 28px;
+      }
+      .brief h1 {
+        font-size: clamp(40px, 7vw, 76px);
+        line-height: 1.05;
+        letter-spacing: -0.055em;
+      }
+      .brief h2 {
+        font-size: 32px;
+        margin-top: 48px;
+      }
+      .brief p,
+      .brief li {
+        font-size: 17px;
+        line-height: 1.7;
+        color: #47534c;
+      }
+      .brief code {
+        font-size: 14px;
+      }
+      .brief pre {
+        padding: 24px;
+        background: #15372a;
+        color: #e5f5dc;
+        overflow: auto;
+        border-radius: 12px;
+      }
+      .brief .actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 28px 0;
+      }
+      .brief table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 15px;
+      }
+      .brief th,
+      .brief td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid #dce1d7;
+      }
+      .brief small {
+        color: #5f6c63;
+      }
+      .brief a:not(.button) {
+        color: #1a633e;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html"
+        >ROWGLASS<span class="version">0.1</span></a
+      ><a class="text-link" href="index.html#case=03-key-change&amp;view=replay"
+        >Open the investigation ↗</a
+      >
+    </header>
+    <main class="brief">
+      <div class="eyebrow">ENGINEERING / A FIVE-MINUTE TOUR</div>
+      <h1>A row diff.<br />A committed history.<br />A case you can run.</h1>
+      <p>
+        Rowglass records source changes independently of the replication engine.
+        When a replica disagrees, it connects the row to its committed history
+        and exports a small, transaction-preserving SQL workload. The included
+        case runs through actual Postgres, PeerDB and ClickHouse.
+      </p>
+      <div class="actions">
+        <a class="button dark" href="rowglass-source.zip" download
+          >Download source + evidence ↓</a
+        ><a class="button light" href="notes/ENGINEERING.md" download
+          >Full engineering brief ↓</a
+        >
+      </div>
+      <small
+        >Independent project by Ivan Balkashynov. Local prototype, MIT code,
+        synthetic data. No affiliation or endorsement.</small
+      >
+      <h2>The result to inspect first</h2>
+      <p>
+        The source changed key <code>60 → 2060</code>. After normalization
+        caught up, ClickHouse still contained both keys. From 104 recorded
+        transactions, Rowglass retained two transactions and one baseline row.
+        That extracted workload reproduced the same
+        <a
+          href="https://clickhouse.com/docs/integrations/clickpipes/postgres/faq#can-i-update-primary-key-columns-in-postgresql"
+          >documented default behavior</a
+        >
+        through a fresh PeerDB mirror.
+      </p>
+      <p>
+        <a href="index.html#case=03-key-change&amp;view=replay"
+          >Inspect the two-transaction case →</a
+        >
+        ·
+        <a href="index.html#case=02-paused-lag&amp;view=compare"
+          >Compare with induced lag →</a
+        >
+        ·
+        <a href="index.html#case=06-restored&amp;view=compare"
+          >Inspect the restored control →</a
+        >
+      </p>
+      <h2>Evidence before acknowledgment</h2>
+      <pre>
+exported snapshot + pgoutput
+          ↓
+Rust decode → transaction → framed journal → sync
+                                              ↓
+                                      durable LSN → ACK
+          ↓
+typed state + ClickHouse observation
+          ↓
+row history → backward lineage → isolated SQL</pre
+      >
+      <p>
+        The journal uses bounded CRC-framed entries, a consistent baseline seal,
+        an exclusive writer lock and explicit durability before feedback. It
+        tolerates a partial trailing frame, rejects complete corruption, and
+        checks source identity and retained WAL before resuming.
+      </p>
+      <p>
+        A real capture test exposed automatic keepalive feedback advancing
+        beyond the recorder's durability boundary. The transport now controls
+        libpq COPY BOTH feedback explicitly. Its dependency on pinned driver
+        internals is documented, and a regression test verifies the server slot
+        never advances beyond durable evidence on unrelated WAL.
+      </p>
+      <h2>Three contracts that matter</h2>
+      <div class="mechanism-grid">
+        <article>
+          <span class="step">01</span>
+          <h3>A mismatch can be lag</h3>
+          <p>
+            Live snapshots stay labeled live. Controlled lab cuts require source
+            write locks, recorded commit coverage and PeerDB normalization
+            evidence. A timestamp alone does not establish a shared snapshot.
+          </p>
+        </article>
+        <article>
+          <span class="step">02</span>
+          <h3>Exact values, explicit unknowns</h3>
+          <p>
+            Decimals and JSON numbers retain exact semantics. Null, missing
+            rows, unchanged TOAST and unknown values stay distinct. Visible
+            conflicting target version ties fail the observation.
+          </p>
+        </article>
+        <article>
+          <span class="step">03</span>
+          <h3>Transactions stay whole</h3>
+          <p>
+            Backward key dependencies retain predecessor rows, key changes and
+            companion writes across tables. Replay produces scratch-schema SQL,
+            not original statements or a proof of minimum size.
+          </p>
+        </article>
+      </div>
+      <h2>Measured, including the unfavorable result</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>100,000-row fixture</th>
+              <th>Median time</th>
+              <th>Peak RSS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Native inspect</td>
+              <td>0.223 s</td>
+              <td>88.1 MiB</td>
+            </tr>
+            <tr>
+              <td>Native audit</td>
+              <td>0.444 s</td>
+              <td>197.6 MiB</td>
+            </tr>
+            <tr>
+              <td>Restricted Python reference</td>
+              <td>0.298 s</td>
+              <td>256.0 MiB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The Python reference is faster at this size. Native audit uses less
+        memory. Three warm-cache runs on macOS arm64 include process startup,
+        CRC/SHA validation, reconstruction and comparison of three-column rows
+        with 10% updates. This is not ingestion or network throughput. Wide
+        values and many mismatches cost more.
+      </p>
+      <p>
+        <a href="notes/VALIDATION.md" download
+          >All scales, method and test evidence ↓</a
+        >
+        · <a href="data/report.json" download>Raw recorded report ↓</a>
+      </p>
+      <h2>Where it fits, and where it does not</h2>
+      <p>
+        For a one-time comparison without captured history, a table-diff tool is
+        simpler. Rowglass is for a bounded investigation where committed source
+        evidence and a runnable handoff matter. It needs a recording before the
+        incident. Full state lives in memory, one sync is performed per commit,
+        and replay is limited to a 256 MiB journal.
+      </p>
+      <p>
+        Regular tables with stable primary keys and a fixed unfiltered
+        publication are the supported contract. General DDL, failover
+        continuity, arbitrary custom types, sharded destination snapshots and
+        automatic redaction are not supported. Replay omits triggers, foreign
+        keys and original statement predicates. It spans the complete supplied
+        recording, which may extend beyond an earlier observation.
+      </p>
+      <h2>Run it, then judge it</h2>
+      <pre>
+python3 -m venv .venv
+.venv/bin/pip install -e .
+cargo build --release --locked
+.venv/bin/python scripts/verify_evidence.py
+.venv/bin/python scripts/build_demo.py</pre
+      >
+      <p>
+        The source package includes the real lab, tests, frozen raw observations
+        and a reproducible demo generator. Twelve core/product tests and six
+        real pipeline scenarios passed locally. The prepared CI workflow has not
+        run on a hosted repository.
+        <a href="notes/OPERATIONS.md" download
+          >Operations and full lab instructions ↓</a
+        >
+        · <a href="notes/DESIGN.md" download>Detailed contracts ↓</a>
+      </p>
+      <p>
+        The next useful test is an engineer trying the bundle during an
+        investigation. No adoption or production-reliability claim is made
+        before that happens.
+      </p>
+    </main>
+    <footer>
+      <a class="brand" href="index.html">ROWGLASS</a
+      ><span>Committed evidence. Inspectable boundaries.</span>
+    </footer>
+  </body>
+</html>

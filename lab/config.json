@@ -1,0 +1,7 @@
+{
+  "source_dsn_env": "ROWGLASS_SOURCE_DSN",
+  "publication": "rowglass_demo",
+  "slot": "rowglass_capture",
+  "tables": [{"source": "public.orders", "target": "orders"}, {"source": "public.payments", "target": "payments"}],
+  "clickhouse": {"database": "rowglass"}
+}

@@ -1,0 +1,36 @@
+name: rowglass-lab
+services:
+  source:
+    image: postgres:17-alpine
+    command: ["postgres", "-c", "wal_level=logical", "-c", "max_replication_slots=12", "-c", "max_wal_senders=12", "-c", "max_slot_wal_keep_size=1024"]
+    environment:
+      POSTGRES_USER: rowglass
+      POSTGRES_PASSWORD: rowglass-local
+      POSTGRES_DB: rowglass
+    ports: ["127.0.0.1:55432:5432"]
+    volumes: ["source-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rowglass -d rowglass"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.8.2.7
+    environment:
+      CLICKHOUSE_USER: rowglass
+      CLICKHOUSE_PASSWORD: rowglass-local
+      CLICKHOUSE_DB: rowglass
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports: ["127.0.0.1:58123:8123", "127.0.0.1:59000:9000"]
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./lab/clickhouse.xml:/etc/clickhouse-server/config.d/rowglass.xml:ro
+      - ./lab/users.xml:/etc/clickhouse-server/users.d/rowglass.xml:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8123/ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+volumes:
+  source-data:
+  clickhouse-data:

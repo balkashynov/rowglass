@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f4f5ed" />
+    <title>Rowglass | Every row has a history</title>
+    <meta
+      name="description"
+      content="An independent replication flight recorder. Trace a ClickHouse discrepancy back to committed Postgres transactions and export a runnable replay."
+    />
+    <link rel="icon" href="favicon.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="data.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#"
+        ><svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M3 4h18v7H3zm8 9h18v7H11zM3 22h18v7H3z" /></svg
+        >ROWGLASS<span class="version">0.1</span></a
+      >
+      <nav aria-label="Main">
+        <a href="#investigate">Investigation</a
+        ><a href="#mechanism">Under the glass</a><a href="#evidence">Evidence</a
+        ><a id="engineering-link" href="engineering.html" hidden
+          >Engineering ↗</a
+        >
+      </nav>
+      <a class="top-download" href="data/report.json" download
+        >Download evidence <span>↗</span></a
+      >
+    </header>
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">
+            <span class="dot"></span> REPLICATION FLIGHT RECORDER
+          </div>
+          <h1>Every row<br />has a history<span class="green">.</span></h1>
+          <p class="lede">
+            When Postgres and ClickHouse disagree, keep the transaction that
+            explains why.
+          </p>
+          <p class="hero-detail">
+            Rowglass records source changes independently, inspects replica
+            discrepancies, and turns a row’s history into a runnable SQL replay.
+          </p>
+          <a class="button dark" href="#investigate"
+            >Open the investigation <span>↓</span></a
+          >
+          <div class="hero-meta">
+            RUST CORE <span>·</span> POSTGRES pgoutput <span>·</span> CLICKHOUSE
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Recorded key-change investigation">
+          <div class="visual-top">
+            <span>CASE FILE / 001</span
+            ><span class="recorded"
+              ><span class="dot"></span> RECORDED EXECUTION</span
+            >
+          </div>
+          <div class="visual-statement">
+            The pipeline caught up.<br /><strong
+              >The old key stayed behind.</strong
+            >
+          </div>
+          <div class="flow">
+            <div class="flow-node">
+              <span class="node-symbol">P</span><small>POSTGRES</small
+              ><b>id 60 → 2060</b>
+            </div>
+            <div class="flow-line"><span>PeerDB</span><i></i></div>
+            <div class="flow-node destination">
+              <span class="node-symbol">▥</span><small>CLICKHOUSE</small
+              ><b>id 60 <em>+</em> 2060</b>
+            </div>
+          </div>
+          <div class="evidence-strip">
+            <span class="glass-icon">≡</span>
+            <div>
+              <small>INDEPENDENT SOURCE JOURNAL</small
+              ><b>Commit → history → isolated replay</b>
+            </div>
+            <span class="check">✓</span>
+          </div>
+          <div class="visual-foot">
+            A documented primary-key update limitation, reproduced locally. The
+            browser explores saved evidence; it does not run the databases.
+          </div>
+        </div>
+      </section>
+      <section class="metrics" aria-label="Recorded run summary">
+        <div>
+          <span class="metric" id="metric-transactions">…</span
+          ><small>committed transactions recorded</small>
+        </div>
+        <div>
+          <span class="metric" id="metric-changes">…</span
+          ><small>source row changes preserved</small>
+        </div>
+        <div>
+          <span class="metric" id="metric-replay">…</span
+          ><small>transactions in the key-change replay</small>
+        </div>
+        <div>
+          <span class="metric" id="metric-match">…</span
+          ><small>rows match after controlled restoration</small>
+        </div>
+      </section>
+      <section id="investigate" class="investigate">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">01 / INVESTIGATE</div>
+            <h2>From a discrepancy<br />to its transaction.</h2>
+          </div>
+          <p>
+            Six moments from a real local pipeline.<br />Choose a state, inspect
+            a row, follow its history.
+          </p>
+        </div>
+        <div
+          class="case-tabs"
+          role="tablist"
+          aria-label="Recorded pipeline states"
+          id="cases"
+        ></div>
+        <div class="workspace">
+          <div class="workspace-top">
+            <div>
+              <span id="case-status" class="status"></span>
+              <h3 id="case-title"></h3>
+              <p id="case-description"></p>
+            </div>
+            <a id="audit-download" class="text-link" download>Audit JSON ↗</a>
+          </div>
+          <div class="cut-bar">
+            <span><i class="dot"></i> SOURCE CUT <b id="cut"></b></span
+            ><span id="cut-mode"></span>
+          </div>
+          <div class="counts" id="counts"></div>
+          <div class="investigation-grid">
+            <aside class="row-list">
+              <div class="list-header">
+                <b>Observed discrepancies</b><span id="row-count"></span>
+              </div>
+              <label class="search-label"
+                ><span class="sr-only">Find a row by key or table</span
+                ><input
+                  id="search"
+                  type="search"
+                  placeholder="Find a key or table…"
+              /></label>
+              <div class="filters" role="group" aria-label="Discrepancy filter">
+                <button data-filter="all" class="active">All</button
+                ><button data-filter="missing">Missing</button
+                ><button data-filter="changed">Changed</button
+                ><button data-filter="unexpected">Extra</button>
+              </div>
+              <div id="rows"></div>
+            </aside>
+            <article class="inspector">
+              <div id="empty-state" hidden></div>
+              <div id="row-detail">
+                <div class="row-heading">
+                  <div>
+                    <span class="eyebrow" id="detail-table"></span>
+                    <h3 id="detail-key"></h3>
+                  </div>
+                  <span class="status" id="detail-kind"></span>
+                </div>
+                <div
+                  class="detail-tabs"
+                  role="tablist"
+                  aria-label="Row investigation view"
+                >
+                  <button
+                    id="tab-compare"
+                    role="tab"
+                    aria-selected="true"
+                    data-view="compare"
+                  >
+                    Compare values</button
+                  ><button
+                    id="tab-history"
+                    role="tab"
+                    aria-selected="false"
+                    data-view="history"
+                  >
+                    Source history</button
+                  ><button
+                    id="tab-replay"
+                    role="tab"
+                    aria-selected="false"
+                    data-view="replay"
+                  >
+                    Replay case <span>↗</span>
+                  </button>
+                </div>
+                <div
+                  id="compare-panel"
+                  role="tabpanel"
+                  aria-labelledby="tab-compare"
+                ></div>
+                <div
+                  id="history-panel"
+                  role="tabpanel"
+                  aria-labelledby="tab-history"
+                  hidden
+                ></div>
+                <div
+                  id="replay-panel"
+                  role="tabpanel"
+                  aria-labelledby="tab-replay"
+                  hidden
+                ></div>
+              </div>
+            </article>
+          </div>
+          <div class="workspace-foot">
+            <span>Evidence, with boundaries.</span> A live mismatch may be lag.
+            Controlled cuts here use source write locks and PeerDB normalization
+            progress; they do not prove permanent loss.
+          </div>
+        </div>
+      </section>
+      <section id="mechanism" class="mechanism">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">02 / UNDER THE GLASS</div>
+            <h2>Observe independently.<br />Replay deliberately.</h2>
+          </div>
+          <p>
+            A second source connection, a durable journal,<br />and a read-only
+            view of the destination.
+          </p>
+        </div>
+        <div class="mechanism-grid">
+          <article>
+            <span class="step">01</span>
+            <h3>A consistent beginning</h3>
+            <p>
+              An exported Postgres snapshot anchors the baseline to logical
+              replication. Transaction boundaries stay intact, including writes
+              across tables.
+            </p>
+            <code>snapshot → pgoutput → commit</code>
+          </article>
+          <article>
+            <span class="step">02</span>
+            <h3>Evidence before acknowledgment</h3>
+            <p>
+              The Rust core validates changes and syncs a checksummed journal
+              before transport advances its acknowledgment. Partial trailing
+              frames are recoverable; complete corrupt frames are rejected.
+            </p>
+            <code>decode → append → fsync → ACK</code>
+          </article>
+          <article>
+            <span class="step">03</span>
+            <h3>A case you can run</h3>
+            <p>
+              Backward row lineage keeps whole transactions and their companion
+              writes. Export SQL for a fresh schema, then reproduce the behavior
+              through a real replica.
+            </p>
+            <code>selected row → lineage → SQL</code>
+          </article>
+        </div>
+        <div class="tradeoff">
+          <b>Why not just compare tables?</b>
+          <p>
+            A table diff answers which values disagree. Rowglass adds the
+            committed history that produced a row and a replayable workload. It
+            needs a recording in place before the incident and uses memory
+            proportional to the reconstructed state. For a one-time
+            reconciliation without history, a table-diff tool is the simpler
+            fit.
+          </p>
+        </div>
+      </section>
+      <section id="evidence" class="evidence-section">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">03 / EVIDENCE & LIMITS</div>
+            <h2>Inspect the proof.<br />Keep the caveats.</h2>
+          </div>
+          <a class="button light" href="data/report.json" download
+            >Full recorded report ↗</a
+          >
+        </div>
+        <div class="evidence-grid">
+          <article>
+            <span class="evidence-label">REAL INTEGRATION</span>
+            <h3>Postgres → PeerDB → ClickHouse</h3>
+            <p>
+              Dedicated local containers, synthetic orders and payments, real
+              WAL and real replication. The old-key behavior is a documented
+              limitation. Separate destination mutations test missing, changed
+              and extra rows.
+            </p>
+            <a
+              href="https://clickhouse.com/docs/integrations/clickpipes/postgres/faq#can-i-update-primary-key-columns-in-postgresql"
+              target="_blank"
+              rel="noreferrer"
+              >Read the documented behavior ↗</a
+            >
+          </article>
+          <article>
+            <span class="evidence-label">REPLAY CONTRACT</span>
+            <h3>Small enough to investigate</h3>
+            <p>
+              The slice keeps whole transactions connected through row keys. It
+              reconstructs row changes, not the original application statements,
+              foreign keys or triggers. It is not a claim of a mathematically
+              minimal failing case.
+            </p>
+            <a id="key-replay-download" href="data/report.json" download
+              >Inspect the replay manifest ↗</a
+            >
+          </article>
+          <article>
+            <span class="evidence-label">MEASURED COST</span>
+            <h3 id="bench-title">Correctness before scale claims</h3>
+            <p id="bench-copy">
+              Full-state reconstruction and comparison are currently in memory.
+              The recorder uses one fsync per committed transaction. Throughput
+              depends heavily on transaction size and storage latency.
+            </p>
+            <a href="data/report.json" download
+              >Inspect recorded measurements ↗</a
+            >
+          </article>
+        </div>
+        <details class="limitations">
+          <summary>Supported scope and important limits <span>+</span></summary>
+          <p>
+            PostgreSQL protocol v1, UTF-8 text tuples, regular tables with
+            explicit primary keys. Exact numeric, JSON, boolean, bytes,
+            timestamps and common scalar types are canonicalized; unsupported
+            values remain unverifiable. Failover, incomplete bootstrap and
+            selected schema changes require a new recording or explicit
+            intervention. Transactions above 64 MiB are rejected before
+            acknowledgment. Visible maximum-version conflicts are rejected;
+            background merges may already have erased older versions. Evidence
+            may contain source values, so review it before sharing.
+          </p>
+        </details>
+      </section>
+      <section class="try-it">
+        <div>
+          <div class="eyebrow">YOUR PIPELINE, YOUR EVIDENCE</div>
+          <h2>Keep the next incident<br />from becoming guesswork.</h2>
+          <p>
+            Record a bounded window. Inspect the discrepancy.<br />Share a case
+            someone else can run.
+          </p>
+        </div>
+        <div class="terminal">
+          <div class="terminal-top">
+            <i></i><i></i><i></i><span>rowglass / quick path</span>
+          </div>
+          <pre><span># Start with your source publication</span>
+rowglass record config.json evidence.rg
+
+<span># Observe the destination</span>
+rowglass snapshot config.json evidence.rg target.json
+rowglass audit evidence.rg target.json &gt; audit.json
+
+<span># Package an investigation</span>
+rowglass report evidence.rg audit.json report/</pre>
+          <small
+            >Requires Rust, Python and configured database access. This demo
+            opens offline without any of them.</small
+          >
+        </div>
+      </section>
+    </main>
+    <footer>
+      <a class="brand" href="#">ROWGLASS</a
+      ><span>Built by Ivan Balkashynov · Independent project</span
+      ><span>Recorded local execution · No affiliation or endorsement</span>
+    </footer>
+    <noscript
+      ><p class="notice">
+        This investigation needs JavaScript to explore saved data. The complete
+        <a href="data/report.json">JSON report</a> is available without it.
+      </p></noscript
+    >
+  </body>
+</html>

@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "run": "pipeline-1792089476859139000",
+  "source": {
+    "changes": 205,
+    "identity": {
+      "database": "rowglass",
+      "protocol": "pgoutput-v1",
+      "publication": "rowglass_demo",
+      "slot": "rowglass_demo_1792089476859408000",
+      "snapshot_lsn": "0/19BC770",
+      "system_id": "7696965593702682657",
+      "tables": [
+        {
+          "source": "public.orders",
+          "target": "orders"
+        },
+        {
+          "source": "public.payments",
+          "target": "payments"
+        }
+      ],
+      "timeline": 1
+    },
+    "journal": {
+      "ignored_incomplete_tail_bytes": 0,
+      "sha256": "6257a189fa76cf0d1bd80a99cf510489486f506d18243b911d2b0c2ca4b83e8b",
+      "valid_bytes": 592579
+    },
+    "rows": 2099,
+    "sealed": true,
+    "source_cut": "0/19C6C80",
+    "tables": [
+      {
+        "name": "public.orders",
+        "rows": 1999
+      },
+      {
+        "name": "public.payments",
+        "rows": 100
+      }
+    ],
+    "transactions": 104
+  },
+  "audits": [
+    {
+      "name": "01-baseline",
+      "status": "live_observation",
+      "totals": {
+        "matched": 2000
+      }
+    },
+    {
+      "name": "02-paused-lag",
+      "status": "live_observation",
+      "totals": {
+        "changed": 98,
+        "matched": 1900,
+        "missing": 101,
+        "unexpected": 2
+      }
+    },
+    {
+      "name": "03-key-change",
+      "status": "diverged_at_cut",
+      "totals": {
+        "matched": 2099,
+        "unexpected": 1
+      }
+    },
+    {
+      "name": "04-aligned",
+      "status": "matched_at_cut",
+      "totals": {
+        "matched": 2099
+      }
+    },
+    {
+      "name": "05-injected-divergence",
+      "status": "diverged_at_cut",
+      "totals": {
+        "changed": 1,
+        "matched": 2097,
+        "missing": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "name": "06-restored",
+      "status": "matched_at_cut",
+      "totals": {
+        "matched": 2099
+      }
+    }
+  ],
+  "replay": {
+    "selected_transactions": 3,
+    "total_transactions": 104,
+    "baseline_rows": 1,
+    "executed_rows": 2,
+    "sql_sha256": "35c93ec9d7cc574c57fc70a17f09e7b96e99018149b6cd9bbe1abbca8257ce8f"
+  },
+  "fault": "Destination rows deliberately altered by this lab. No upstream PeerDB bug is claimed.",
+  "versions": {
+    "postgres": "17",
+    "peerdb": "stable-v0.37.10",
+    "clickhouse": "26.8.2.7"
+  }
+}

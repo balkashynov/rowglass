@@ -1,0 +1,420 @@
+{
+  "consistency": {
+    "established_by": "Dedicated lab holds SHARE locks on both source tables. PeerDB normalized through the final captured commit.",
+    "mode": "controlled_quiescent",
+    "peerdb": {
+      "last_offset": "27028560",
+      "normalize_batch_id": 1,
+      "sync_batch_id": 1
+    },
+    "source_commit_lsn": "0/19C6C50",
+    "source_cut": "0/19C6C80"
+  },
+  "contract": "A live mismatch can be lag. A controlled cut is a caller-established experimental boundary, not an inferred global snapshot. No audit alone proves permanent loss.",
+  "format": "rowglass-audit-v1",
+  "journal": {
+    "ignored_incomplete_tail_bytes": 0,
+    "sha256": "6257a189fa76cf0d1bd80a99cf510489486f506d18243b911d2b0c2ca4b83e8b",
+    "valid_bytes": 592579
+  },
+  "mismatches": [
+    {
+      "fields": [],
+      "history": [
+        {
+          "key": "[\"number:37e0\"]",
+          "lsn": "snapshot",
+          "op": "snapshot",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "46.250037"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-37"
+            },
+            "id": {
+              "kind": "text",
+              "value": "37"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"us\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "pending"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-01-01 00:00:00+00"
+            }
+          },
+          "sequence": 0,
+          "table": "public.orders",
+          "xid": null
+        },
+        {
+          "key": "[\"number:37e0\"]",
+          "lsn": "0/19C0330",
+          "op": "update",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "46.250038"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-37"
+            },
+            "id": {
+              "kind": "text",
+              "value": "37"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"us\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "sequence": 73,
+          "table": "public.orders",
+          "xid": 780
+        }
+      ],
+      "key": "[\"number:37e0\"]",
+      "kind": "missing",
+      "source": {
+        "amount": {
+          "kind": "text",
+          "value": "46.250038"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-37"
+        },
+        "id": {
+          "kind": "text",
+          "value": "37"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\": \"us\"}"
+        },
+        "status": {
+          "kind": "text",
+          "value": "paid"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00+00"
+        }
+      },
+      "table": "public.orders",
+      "target": null,
+      "unknown_fields": []
+    },
+    {
+      "fields": [
+        "amount"
+      ],
+      "history": [
+        {
+          "key": "[\"number:42e0\"]",
+          "lsn": "snapshot",
+          "op": "snapshot",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "52.500042"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "pending"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-01-01 00:00:00+00"
+            }
+          },
+          "sequence": 0,
+          "table": "public.orders",
+          "xid": null
+        },
+        {
+          "key": "[\"number:42e0\"]",
+          "lsn": "0/19C0B28",
+          "op": "update",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "52.500043"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "sequence": 83,
+          "table": "public.orders",
+          "xid": 785
+        },
+        {
+          "key": "[\"number:42e0\"]",
+          "lsn": "0/19C6980",
+          "op": "update",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "9007199254740993.123456"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "sequence": 201,
+          "table": "public.orders",
+          "xid": 844
+        },
+        {
+          "key": "[\"number:42e0\"]",
+          "lsn": "0/19C6A88",
+          "op": "update",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "9007199254740993.123456"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-42"
+            },
+            "id": {
+              "kind": "text",
+              "value": "42"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "refunded"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "sequence": 203,
+          "table": "public.orders",
+          "xid": 845
+        }
+      ],
+      "key": "[\"number:42e0\"]",
+      "kind": "changed",
+      "source": {
+        "amount": {
+          "kind": "text",
+          "value": "9007199254740993.123456"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-42"
+        },
+        "id": {
+          "kind": "text",
+          "value": "42"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\": \"ca\"}"
+        },
+        "status": {
+          "kind": "text",
+          "value": "refunded"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00+00"
+        }
+      },
+      "table": "public.orders",
+      "target": {
+        "amount": {
+          "kind": "text",
+          "value": "9007199254740992.123456"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-42"
+        },
+        "id": {
+          "kind": "text",
+          "value": "42"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\":\"ca\"}"
+        },
+        "status": {
+          "kind": "text",
+          "value": "refunded"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00.000000+00:00"
+        }
+      },
+      "unknown_fields": []
+    },
+    {
+      "fields": [],
+      "history": null,
+      "key": "[\"number:999999e0\"]",
+      "kind": "unexpected",
+      "source": null,
+      "table": "public.orders",
+      "target": {
+        "amount": {
+          "kind": "text",
+          "value": "1.250002"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-1"
+        },
+        "id": {
+          "kind": "text",
+          "value": "999999"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\":\"us\"}"
+        },
+        "status": {
+          "kind": "text",
+          "value": "paid"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00.000000+00:00"
+        }
+      },
+      "unknown_fields": []
+    }
+  ],
+  "source": {
+    "changes": 205,
+    "identity": {
+      "database": "rowglass",
+      "protocol": "pgoutput-v1",
+      "publication": "rowglass_demo",
+      "slot": "rowglass_demo_1792089476859408000",
+      "snapshot_lsn": "0/19BC770",
+      "system_id": "7696965593702682657",
+      "tables": [
+        {
+          "source": "public.orders",
+          "target": "orders"
+        },
+        {
+          "source": "public.payments",
+          "target": "payments"
+        }
+      ],
+      "timeline": 1
+    },
+    "rows": 2099,
+    "sealed": true,
+    "source_cut": "0/19C6C80",
+    "tables": [
+      {
+        "name": "public.orders",
+        "rows": 1999
+      },
+      {
+        "name": "public.payments",
+        "rows": 100
+      }
+    ],
+    "transactions": 104
+  },
+  "status": "diverged_at_cut",
+  "target_metadata": {
+    "elapsed_ms": 49.6565829962492,
+    "engine": "ClickHouse",
+    "limitation": "Per-table reads, no shared source/target snapshot. Version conflicts already merged away cannot be recovered from this read.",
+    "observed_at": "2026-10-15T18:38:05.144466+00:00",
+    "queries": [
+      {
+        "query_id": "4460935d-2583-4122-aa7a-1347a13d230f",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`customer`) AS `customer`, toString(`amount`) AS `amount`, toString(`status`) AS `status`, toString(`metadata`) AS `metadata`, toString(toTimeZone(`updated_at`, 'UTC')) AS `updated_at`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `orders`) WHERE __rg_rank = 1"
+      },
+      {
+        "query_id": "12ecea88-4325-4302-ab35-ffb9feeacf0e",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`order_id`) AS `order_id`, toString(`amount`) AS `amount`, toString(`state`) AS `state`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `payments`) WHERE __rg_rank = 1"
+      }
+    ]
+  },
+  "totals": {
+    "changed": 1,
+    "matched": 2097,
+    "missing": 1,
+    "unexpected": 1
+  },
+  "scenario": "05-injected-divergence"
+}

@@ -1,0 +1,193 @@
+{
+  "consistency": {
+    "established_by": "Dedicated lab holds SHARE locks on both source tables. PeerDB normalized through the final captured commit.",
+    "mode": "controlled_quiescent",
+    "peerdb": {
+      "last_offset": "27028560",
+      "normalize_batch_id": 1,
+      "sync_batch_id": 1
+    },
+    "source_commit_lsn": "0/19C6C50",
+    "source_cut": "0/19C6C80"
+  },
+  "contract": "A live mismatch can be lag. A controlled cut is a caller-established experimental boundary, not an inferred global snapshot. No audit alone proves permanent loss.",
+  "format": "rowglass-audit-v1",
+  "journal": {
+    "ignored_incomplete_tail_bytes": 0,
+    "sha256": "6257a189fa76cf0d1bd80a99cf510489486f506d18243b911d2b0c2ca4b83e8b",
+    "valid_bytes": 592579
+  },
+  "mismatches": [
+    {
+      "fields": [],
+      "history": [
+        {
+          "key": "[\"number:6e1\"]",
+          "lsn": "snapshot",
+          "op": "snapshot",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "75.000060"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-60"
+            },
+            "id": {
+              "kind": "text",
+              "value": "60"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "pending"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-01-01 00:00:00+00"
+            }
+          },
+          "sequence": 0,
+          "table": "public.orders",
+          "xid": null
+        },
+        {
+          "key": "[\"number:6e1\"]",
+          "lsn": "0/19C27F0",
+          "op": "update",
+          "row": {
+            "amount": {
+              "kind": "text",
+              "value": "75.000061"
+            },
+            "customer": {
+              "kind": "text",
+              "value": "customer-60"
+            },
+            "id": {
+              "kind": "text",
+              "value": "60"
+            },
+            "metadata": {
+              "kind": "text",
+              "value": "{\"region\": \"ca\"}"
+            },
+            "status": {
+              "kind": "text",
+              "value": "paid"
+            },
+            "updated_at": {
+              "kind": "text",
+              "value": "2026-10-15 12:00:00+00"
+            }
+          },
+          "sequence": 119,
+          "table": "public.orders",
+          "xid": 803
+        },
+        {
+          "key": "[\"number:6e1\"]",
+          "lsn": "0/19C6C80",
+          "op": "delete",
+          "row": null,
+          "sequence": 205,
+          "table": "public.orders",
+          "xid": 847
+        }
+      ],
+      "key": "[\"number:6e1\"]",
+      "kind": "unexpected",
+      "source": null,
+      "table": "public.orders",
+      "target": {
+        "amount": {
+          "kind": "text",
+          "value": "75.000061"
+        },
+        "customer": {
+          "kind": "text",
+          "value": "customer-60"
+        },
+        "id": {
+          "kind": "text",
+          "value": "60"
+        },
+        "metadata": {
+          "kind": "text",
+          "value": "{\"region\":\"ca\"}"
+        },
+        "status": {
+          "kind": "text",
+          "value": "paid"
+        },
+        "updated_at": {
+          "kind": "text",
+          "value": "2026-10-15 12:00:00.000000+00:00"
+        }
+      },
+      "unknown_fields": []
+    }
+  ],
+  "source": {
+    "changes": 205,
+    "identity": {
+      "database": "rowglass",
+      "protocol": "pgoutput-v1",
+      "publication": "rowglass_demo",
+      "slot": "rowglass_demo_1792089476859408000",
+      "snapshot_lsn": "0/19BC770",
+      "system_id": "7696965593702682657",
+      "tables": [
+        {
+          "source": "public.orders",
+          "target": "orders"
+        },
+        {
+          "source": "public.payments",
+          "target": "payments"
+        }
+      ],
+      "timeline": 1
+    },
+    "rows": 2099,
+    "sealed": true,
+    "source_cut": "0/19C6C80",
+    "tables": [
+      {
+        "name": "public.orders",
+        "rows": 1999
+      },
+      {
+        "name": "public.payments",
+        "rows": 100
+      }
+    ],
+    "transactions": 104
+  },
+  "status": "diverged_at_cut",
+  "target_metadata": {
+    "elapsed_ms": 26.69833300751634,
+    "engine": "ClickHouse",
+    "limitation": "Per-table reads, no shared source/target snapshot. Version conflicts already merged away cannot be recovered from this read.",
+    "observed_at": "2026-10-15T18:37:59.998736+00:00",
+    "queries": [
+      {
+        "query_id": "5c1e53df-cf52-49a3-9b78-9a73cd13b37b",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`customer`) AS `customer`, toString(`amount`) AS `amount`, toString(`status`) AS `status`, toString(`metadata`) AS `metadata`, toString(toTimeZone(`updated_at`, 'UTC')) AS `updated_at`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `orders`) WHERE __rg_rank = 1"
+      },
+      {
+        "query_id": "08a2b253-73b3-4f4a-aa9d-aa75c9e48ecd",
+        "sql": "SELECT toString(`id`) AS `id`, toString(`order_id`) AS `order_id`, toString(`amount`) AS `amount`, toString(`state`) AS `state`, toString(`_peerdb_version`) AS __rg_version,\n                    toString(`_peerdb_is_deleted`) AS __rg_deleted FROM (\n                    SELECT *, dense_rank() OVER (PARTITION BY `id` ORDER BY `_peerdb_version` DESC) AS __rg_rank\n                    FROM `payments`) WHERE __rg_rank = 1"
+      }
+    ]
+  },
+  "totals": {
+    "matched": 2099,
+    "unexpected": 1
+  },
+  "scenario": "03-key-change"
+}

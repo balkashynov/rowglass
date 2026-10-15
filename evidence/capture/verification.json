@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "checks": [
+    "consistent snapshot",
+    "exact numeric/JSON/null/bytea/timestamps",
+    "unchanged TOAST",
+    "primary-key update",
+    "rollback omitted",
+    "hard-stop and WAL resume",
+    "schema change followed by all-row updates",
+    "truncate",
+    "unrelated WAL and keepalive do not advance ACK past durable evidence"
+  ],
+  "runs": [
+    {
+      "changes": 3,
+      "identity": {
+        "database": "rowglass",
+        "protocol": "pgoutput-v1",
+        "publication": "rowglass_test",
+        "slot": "rowglass_test",
+        "snapshot_lsn": "0/1ACABF8",
+        "system_id": "7696965593702682657",
+        "tables": [
+          {
+            "source": "public.test_orders",
+            "target": "test_orders"
+          }
+        ],
+        "timeline": 1
+      },
+      "rows": 3,
+      "sealed": true,
+      "source_cut": "0/1ACAEC0",
+      "tables": [
+        {
+          "name": "public.test_orders",
+          "rows": 3
+        }
+      ],
+      "transactions": 3
+    },
+    {
+      "changes": 5,
+      "identity": {
+        "database": "rowglass",
+        "protocol": "pgoutput-v1",
+        "publication": "rowglass_test",
+        "slot": "rowglass_test",
+        "snapshot_lsn": "0/1ACABF8",
+        "system_id": "7696965593702682657",
+        "tables": [
+          {
+            "source": "public.test_orders",
+            "target": "test_orders"
+          }
+        ],
+        "timeline": 1
+      },
+      "rows": 2,
+      "sealed": true,
+      "source_cut": "0/1ADB960",
+      "tables": [
+        {
+          "name": "public.test_orders",
+          "rows": 2
+        }
+      ],
+      "transactions": 5
+    },
+    {
+      "changes": 7,
+      "identity": {
+        "database": "rowglass",
+        "protocol": "pgoutput-v1",
+        "publication": "rowglass_test",
+        "slot": "rowglass_test",
+        "snapshot_lsn": "0/1ACABF8",
+        "system_id": "7696965593702682657",
+        "tables": [
+          {
+            "source": "public.test_orders",
+            "target": "test_orders"
+          }
+        ],
+        "timeline": 1
+      },
+      "rows": 2,
+      "sealed": true,
+      "source_cut": "0/1ADBE78",
+      "tables": [
+        {
+          "name": "public.test_orders",
+          "rows": 2
+        }
+      ],
+      "transactions": 6
+    },
+    {
+      "changes": 8,
+      "identity": {
+        "database": "rowglass",
+        "protocol": "pgoutput-v1",
+        "publication": "rowglass_test",
+        "slot": "rowglass_test",
+        "snapshot_lsn": "0/1ACABF8",
+        "system_id": "7696965593702682657",
+        "tables": [
+          {
+            "source": "public.test_orders",
+            "target": "test_orders"
+          }
+        ],
+        "timeline": 1
+      },
+      "rows": 0,
+      "sealed": true,
+      "source_cut": "0/1ADD670",
+      "tables": [
+        {
+          "name": "public.test_orders",
+          "rows": 0
+        }
+      ],
+      "transactions": 7
+    }
+  ],
+  "journal": "evidence/capture/evidence.rg"
+}

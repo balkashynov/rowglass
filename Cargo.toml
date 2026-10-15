@@ -1,0 +1,19 @@
+[package]
+name = "rowglass-core"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Durable PostgreSQL change evidence and replication forensics"
+
+[dependencies]
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["arbitrary_precision"] }
+crc32fast = "1"
+sha2 = "0.10"
+fs2 = "0.4"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+
+[[bin]]
+name = "rowglass-core"
+path = "native/main.rs"
