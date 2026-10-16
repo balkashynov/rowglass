@@ -1057,6 +1057,7 @@ footer span {
 @media (max-width: 760px) {
   .topbar {
     padding: 20px 5%;
+    flex-wrap: wrap;
   }
   .brand {
     font-size: 20px;
