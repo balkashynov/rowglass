@@ -1070,7 +1070,7 @@ footer span {
     display: none;
   }
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding-top: 40px;
     gap: 35px;
   }
@@ -1093,13 +1093,19 @@ footer span {
     font-size: 25px;
   }
   .flow-node {
-    padding: 17px;
+    min-width: 0;
+    padding: 12px 8px;
   }
   .flow-node b {
-    font-size: 13px;
+    font-size: 11px;
+    white-space: normal;
   }
   .flow-line {
-    width: 50px;
+    width: 32px;
+    flex: 0 0 32px;
+  }
+  .flow {
+    gap: 8px;
   }
   .visual-foot {
     font-size: 10px;
