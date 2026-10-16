@@ -1,6 +1,7 @@
 """Regenerate the recorded demo exclusively from the shipped synthetic evidence."""
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from rowglass.report import build
@@ -40,6 +41,14 @@ def main():
     (args.output / "notes").mkdir(exist_ok=True)
     for name in ("ENGINEERING.md", "DESIGN.md", "VALIDATION.md", "OPERATIONS.md"):
         shutil.copyfile(ROOT / "docs" / name, args.output / "notes" / name)
+    # Refresh cached styles when a published demo changes, including existing tabs.
+    style_version = hashlib.sha256((args.output / "style.css").read_bytes()).hexdigest()[:12]
+    for page in (args.output / "index.html", args.output / "engineering.html"):
+        page.write_text(
+            page.read_text().replace(
+                'href="style.css"', f'href="style.css?v={style_version}"'
+            )
+        )
     # Keep the engineering page's source download functional even without package.py.
     from package import archive, source_files
 
