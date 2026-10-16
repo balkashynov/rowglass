@@ -2,9 +2,13 @@
 
 **A replication flight recorder for Postgres → ClickHouse.** Keep committed source history, inspect a discrepant row, and export a small SQL workload another engineer can run.
 
+[**Live demo**](https://balkashynov.github.io/rowglass/) · [Replay the recorded case](https://balkashynov.github.io/rowglass/#case=03-key-change&view=replay) · [Engineering walkthrough](https://balkashynov.github.io/rowglass/engineering.html)
+
+[![Evidence and core checks](https://github.com/balkashynov/rowglass/actions/workflows/check.yml/badge.svg)](https://github.com/balkashynov/rowglass/actions/workflows/check.yml)
+
 ![Rowglass investigation](docs/screenshots/hero-desktop.jpg)
 
-Rowglass is an independent working prototype by Ivan Balkashynov. It combines a Rust evidence engine, a PostgreSQL logical-replication recorder, a ClickHouse adapter, a transaction-preserving replay compiler and a portable investigation UI. It is useful when a table diff shows a discrepancy but the transaction history needed to explain it has disappeared.
+Rowglass is an experimental debugging tool by Ivan Balkashynov. It combines a Rust evidence engine, a PostgreSQL logical-replication recorder, a ClickHouse adapter, a transaction-preserving replay compiler and a portable investigation UI. It is useful when a table diff shows a discrepancy but the transaction history needed to explain it has disappeared. Recording must start before the incident. The browser demo explores saved execution with synthetic data; it needs no installation.
 
 ## Start with the case
 
