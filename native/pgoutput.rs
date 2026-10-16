@@ -229,7 +229,9 @@ impl Decoder {
 pub fn unhex(s: &str) -> Result<Vec<u8>> {
     ensure!(s.len().is_multiple_of(2), "odd hex message length");
     s.as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| {
             let a = char::from(pair[0]).to_digit(16).context("invalid hex")?;
             let b = char::from(pair[1]).to_digit(16).context("invalid hex")?;
